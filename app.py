@@ -8,13 +8,23 @@ client = MongoClient("mongodb://admin:secret@localhost:27017/?authSource=admin")
 db = client["habit_tracker"]
 habits = db["habits"]
 
+from datetime import datetime, timedelta
+
+def get_weekly_streak(habit):
+    today = datetime.now().date()
+    last_7_days = [(today - timedelta(days=i)).strftime('%Y-%m-%d') for i in range(7)]
+    streak = sum(1 for entry in habit.get("history", []) if entry["date"] in last_7_days)
+    return streak
+
 @app.route('/')
 def index():
     all_habits = list(habits.find())
     today = datetime.now().strftime("%Y-%m-%d")
     for h in all_habits:
         h['done_today'] = any(entry['date'] == today for entry in h.get("history", []))
+        h['streak'] = get_weekly_streak(h)
     return render_template('index.html', habits=all_habits, today=today)
+
 
 @app.route('/add', methods=['POST'])
 def add_habit():

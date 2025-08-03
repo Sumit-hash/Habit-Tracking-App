@@ -25,6 +25,7 @@
             <tr>
                 <td>{{ habit.name }}</td>
                 <td>{{ '✅' if habit.done_today else '❌' }}</td>
+		<td>{{ habit.streak }}/7</td>
                 <td>
                     <a href="/mark/{{ habit._id }}" class="btn btn-success btn-sm">Mark Done</a>
                     <a href="/history/{{ habit._id }}" class="btn btn-info btn-sm">History</a>
